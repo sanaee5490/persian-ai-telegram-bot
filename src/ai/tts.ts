@@ -23,23 +23,41 @@ export interface TtsVoice {
   name: string
   label: string
   desc: string
+  /** 'f' = زنانه · 'm' = مردانه */
+  gender: 'f' | 'm'
 }
 
-/** ۱۲ صوت متمایز — همه فارسی صحبت می‌کنند */
+/** ۱۶ صوت متمایز — همه فارسی صحبت می‌کنند */
 export const TTS_VOICES: TtsVoice[] = [
-  { name: 'Kore', label: '🎙️ کور', desc: 'محکم و رسمی' },
-  { name: 'Puck', label: '⚡ پاک', desc: 'شاد و پرانرژی' },
-  { name: 'Charon', label: '📚 کارون', desc: 'آموزنده و دقیق' },
-  { name: 'Fenrir', label: '🔥 فنریر', desc: 'هیجانی و پرشور' },
-  { name: 'Aoede', label: '🌿 آئوده', desc: 'سبک و دلنشین' },
-  { name: 'Leda', label: '🌸 لدا', desc: 'جوانانه و شیرین' },
-  { name: 'Zephyr', label: '💨 زفیر', desc: 'روشن و روشن‌گو' },
-  { name: 'Orus', label: '🏛️ اوروس', desc: 'استوار و بااعتماد' },
-  { name: 'Callirrhoe', label: '🫖 کالیروئه', desc: 'آرام و راحت' },
-  { name: 'Autonoe', label: '☀️ اتونوئه', desc: 'شاداب و سرزنده' },
-  { name: 'Despina', label: '🌊 دسپینا', desc: 'نرم و روان' },
-  { name: 'Gacrux', label: '🎩 گاکروکس', desc: 'بالغ و آرام' },
+  // ---------- زنانه ----------
+  { name: 'Kore', label: '🎙️ کور', desc: 'محکم و رسمی', gender: 'f' },
+  { name: 'Aoede', label: '🌿 آئوده', desc: 'سبک و دلنشین', gender: 'f' },
+  { name: 'Leda', label: '🌸 لدا', desc: 'جوانانه و شیرین', gender: 'f' },
+  { name: 'Zephyr', label: '💨 زفیر', desc: 'روشن و روشن‌گو', gender: 'f' },
+  { name: 'Callirrhoe', label: '🫖 کالیروئه', desc: 'آرام و راحت', gender: 'f' },
+  { name: 'Autonoe', label: '☀️ اتونوئه', desc: 'شاداب و سرزنده', gender: 'f' },
+  { name: 'Despina', label: '🌊 دسپینا', desc: 'نرم و روان', gender: 'f' },
+  { name: 'Gacrux', label: '🎩 گاکروکس', desc: 'بالغ و آرام', gender: 'f' },
+  // ---------- مردانه ----------
+  { name: 'Puck', label: '⚡ پاک', desc: 'شاد و پرانرژی', gender: 'm' },
+  { name: 'Charon', label: '📚 کارون', desc: 'آموزنده و دقیق', gender: 'm' },
+  { name: 'Fenrir', label: '🔥 فنریر', desc: 'هیجانی و پرشور', gender: 'm' },
+  { name: 'Orus', label: '🏛️ اوروس', desc: 'استوار و بااعتماد', gender: 'm' },
+  { name: 'Algieba', label: '🍷 آلجیبا', desc: 'نرم و دلنشین', gender: 'm' },
+  { name: 'Enceladus', label: '🌑 انسلادوس', desc: 'عمیق و مرموز', gender: 'm' },
+  { name: 'Umbriel', label: '🌙 اومبریل', desc: 'آسان‌گیر و آرام', gender: 'm' },
+  { name: 'Achird', label: '🤝 آچیرد', desc: 'دوستانه و صمیمی', gender: 'm' },
 ]
+
+/** صداهای یک جنسیت */
+export function voicesByGender(g: 'f' | 'm'): TtsVoice[] {
+  return TTS_VOICES.filter((v) => v.gender === g)
+}
+
+/** برچسب جنسیت برای نمایش */
+export function genderLabel(v: TtsVoice): string {
+  return v.gender === 'f' ? '👩 زنانه' : '👨 مردانه'
+}
 
 export const DEFAULT_VOICE = 'Kore'
 
