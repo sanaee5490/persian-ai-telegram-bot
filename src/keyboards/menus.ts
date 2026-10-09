@@ -1,7 +1,7 @@
 import { InlineKeyboard } from 'grammy'
 import { t } from '../i18n/fa.js'
 import { allModels, modelLabel } from '../ai/index.js'
-import { TTS_STYLES, TTS_VOICES } from '../ai/tts.js'
+import { TTS_STYLES, TTS_VOICES, voicesByGender } from '../ai/tts.js'
 
 export function mainMenuKeyboard(): InlineKeyboard {
   return new InlineKeyboard()
@@ -80,16 +80,36 @@ export function backKeyboard(target = 'nav:main'): InlineKeyboard {
 }
 
 /** کیبورد انتخاب صوت — ۲ تا در هر ردیف */
-export function voicesKeyboard(current: string): InlineKeyboard {
+/** مرحلهٔ اول: انتخاب جنسیت صدا */
+export function voiceGenderKeyboard(): InlineKeyboard {
+  return new InlineKeyboard()
+    .text('👩 زنانه (۸)', 'nav:voices_f')
+    .text('👨 مردانه (۸)', 'nav:voices_m')
+    .row()
+    .text(t.menu.back, 'nav:settings')
+}
+
+/** فهرست صداهای یک جنسیت */
+export function voicesKeyboard(current: string, gender?: 'f' | 'm'): InlineKeyboard {
   const kb = new InlineKeyboard()
-  TTS_VOICES.forEach((v, i) => {
+  const list = gender ? voicesByGender(gender) : TTS_VOICES
+  const title = gender ? (gender === 'f' ? '👩 صداهای زنانه' : '👨 صداهای مردانه') : '🎙️ انتخاب صوت'
+  list.forEach((v, i) => {
     const mark = v.name === current ? '✅ ' : ''
     kb.text(`${mark}${v.label}`, `ttsvoice:${v.name}`)
     if (i % 2 === 1) kb.row()
   })
-  if (TTS_VOICES.length % 2 === 1) kb.row()
+  if (list.length % 2 === 1) kb.row()
+  kb.text('↩️ تغییر جنسیت', 'nav:voices')
   kb.text(t.menu.back, 'nav:settings')
   return kb
+}
+
+/** عنوان فهرست صداها بر اساس جنسیت */
+export function voicesTitle(gender?: 'f' | 'm'): string {
+  if (gender === 'f') return '👩 **صداهای زنانه**'
+  if (gender === 'm') return '👨 **صداهای مردانه**'
+  return t.settings.voiceTitle
 }
 
 /** کیبورد انتخاب لحن */
