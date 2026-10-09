@@ -12,8 +12,17 @@ import {
   synthesize,
   voiceByName,
   voiceLabel,
+  voicesByGender,
 } from '../ai/tts.js'
-import { backKeyboard, closeKeyboard, speakKeyboard, tonesKeyboard, voicesKeyboard } from '../keyboards/menus.js'
+import {
+  backKeyboard,
+  closeKeyboard,
+  speakKeyboard,
+  tonesKeyboard,
+  voiceGenderKeyboard,
+  voicesKeyboard,
+  voicesTitle,
+} from '../keyboards/menus.js'
 import { startTyping } from '../utils/telegram.js'
 
 /** آخرین پاسخ متنی هر کاربر — برای دکمهٔ «بخوان» */
@@ -105,18 +114,18 @@ export function registerTtsHandlers(bot: Bot): void {
     if (sc) await sendSpeech(sc, user.telegram_id, text)
   })
 
-  // ---------- /voice ----------
+  // ---------- /voice → مرحلهٔ ۱: جنسیت ----------
   bot.command('voice', async (ctx) => {
     const user = upsertUser(ctx.from!.id, ctx.from!.username, ctx.from!.first_name)
     await ctx.reply(
       [
         '🎙️ **انتخاب صوت**',
         '',
-        TTS_VOICES.map((v) => `• ${v.label} — ${v.desc}`).join('\n'),
-        '',
         `فعلی: **${voiceLabel(user.voice || DEFAULT_VOICE)}**`,
+        '',
+        'اول جنسیت صدا را انتخاب کن:',
       ].join('\n'),
-      { reply_markup: voicesKeyboard(user.voice || DEFAULT_VOICE) },
+      { reply_markup: voiceGenderKeyboard() },
     )
   })
 
@@ -207,14 +216,33 @@ export function registerTtsHandlers(bot: Bot): void {
         [
           t.settings.voiceTitle,
           '',
-          TTS_VOICES.map((v) => `• ${v.label} — ${v.desc}`).join('\n'),
-          '',
           `فعلی: **${voiceLabel(user.voice || DEFAULT_VOICE)}**`,
+          '',
+          'اول جنسیت صدا را انتخاب کن:',
         ].join('\n'),
-        { reply_markup: voicesKeyboard(user.voice || DEFAULT_VOICE) },
+        { reply_markup: voiceGenderKeyboard() },
       )
       .catch(() => {})
   })
+
+  // ---------- فهرست صداهای یک جنسیت ----------
+  for (const g of ['f', 'm'] as const) {
+    bot.callbackQuery(`nav:voices_${g}`, async (ctx) => {
+      const user = upsertUser(ctx.from!.id, ctx.from!.username, ctx.from!.first_name)
+      await ctx
+        .editMessageText(
+          [
+            voicesTitle(g),
+            '',
+            voicesByGender(g)
+              .map((v) => `${v.name === user.voice ? '✅' : '•'} ${v.label} — ${v.desc}`)
+              .join('\n'),
+          ].join('\n'),
+          { reply_markup: voicesKeyboard(user.voice || DEFAULT_VOICE, g) },
+        )
+        .catch(() => {})
+    })
+  }
 
   bot.callbackQuery('nav:tones', async (ctx) => {
     const user = upsertUser(ctx.from!.id, ctx.from!.username, ctx.from!.first_name)
