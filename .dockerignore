@@ -1,0 +1,16 @@
+node_modules
+dist
+data
+.env
+.env.local
+*.log
+.git
+.gitignore
+Dockerfile
+.dockerignore
+render.yaml
+railway.json
+README.md
+DEPLOY.md
+.vscode
+.idea

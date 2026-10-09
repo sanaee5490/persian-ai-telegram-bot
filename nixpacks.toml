@@ -1,0 +1,12 @@
+# nixpacks.toml — برای Railway / Zeabur / Koyeb (بدون Dockerfile)
+[phases.setup]
+nixPkgs = ["nodejs_20", "python3", "gcc", "gnumake"]
+
+[phases.install]
+cmds = ["npm ci --include=dev"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npm start"

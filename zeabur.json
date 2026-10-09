@@ -1,0 +1,15 @@
+{
+  "$schema": "https://zeabur.com/schema.json",
+  "name": "persian-ai-telegram-bot",
+  "build": {
+    "type": "dockerfile",
+    "dockerfile": "Dockerfile"
+  },
+  "deploy": {
+    "port": 3000,
+    "healthCheck": {
+      "path": "/health",
+      "interval": 30
+    }
+  }
+}

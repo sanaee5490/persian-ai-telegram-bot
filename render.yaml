@@ -1,0 +1,51 @@
+# ============================================
+#  Render Blueprint — دیپلوی یک‌مرحله‌ای
+#  https://render.com → New → Blueprint → این ریپو
+# ============================================
+services:
+  - type: web
+    name: persian-ai-telegram-bot
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 20
+      # ↓↓↓ این‌ها را در پنل Render پر کنید (sync: false یعنی از UI گرفته می‌شود) ↓↓↓
+      - key: BOT_TOKEN
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ADMIN_IDS
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      # ↑↑↑ ↑↑↑ ↑↑↑
+
+      # مقادیر با پیش‌فرض مناسب
+      - key: AI_PROVIDER
+        value: auto
+      - key: DEFAULT_MODEL
+        value: gemini-3.8-flash
+      - key: TEMPERATURE
+        value: "0.7"
+      - key: MAX_TOKENS
+        value: "2048"
+      - key: MAX_HISTORY
+        value: "12"
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "15"
+      - key: ENABLE_WEB_SEARCH
+        value: "true"
+      # Render رایگان دیسک دائمی ندارد؛ دیتابیس کنار سرویس ساخته میشود
+      # (با هر دیپلوی ریست میشود — برای ربات شخصی مشکل نیست)
+      - key: DB_PATH
+        value: ./data/bot.db
+      - key: PUBLIC_URL
+        sync: false
