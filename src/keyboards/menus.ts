@@ -45,25 +45,69 @@ export function miniAppUrl(): string | undefined {
 }
 
 /**
- * کیبورد دائمی پایین صفحهٔ تایپ
+ * برچسب دکمه‌های منوی سریع → action id
+ * وقتی کاربر یکی از این دکمه‌ها را بزند، متن همان به ربات فرستاده می‌شود
+ */
+export const QUICK_ACTIONS: Record<string, string> = {
+  '💬 چت جدید': 'nav:new',
+  '🤖 مدل': 'nav:models',
+  '⚙️ تنظیمات': 'nav:settings',
+  '📊 آمار': 'nav:stats',
+  '👤 درباره': 'nav:about',
+  '🔊 متن به صدا': 'nav:tts',
+  '🎙️ صوت': 'nav:voices',
+  '🎚️ لحن': 'nav:tones',
+  '🧰 ابزارها': 'nav:tools',
+  '🌐 جستجو': 'tool:search',
+  '✍️ انسانی‌سازی': 'tool:humanize',
+  '🌐 ترجمه': 'tool:translate',
+  '📝 خلاصه‌سازی': 'tool:summarize',
+  '🔗 خلاصهٔ لینک': 'tool:link',
+  '📄 خواندن سند': 'tool:ocr',
+  '🧠 حافظه': 'nav:memory',
+  '❓ راهنما': 'nav:help',
+}
+
+/** آیا این متن یکی از دکمه‌های منوی سریع است؟ */
+export function quickAction(text: string): string | undefined {
+  return QUICK_ACTIONS[text.trim()]
+}
+
+/**
+ * کیبورد دائمی پایین صفحهٔ تایپ — همهٔ قابلیت‌ها
  * شامل دکمهٔ مینی‌اپ که مستقیماً از قسمت تایپ باز می‌شود
  */
 export function mainReplyKeyboard(): Keyboard {
   const kb = new Keyboard()
     .text('💬 چت جدید')
+    .text('🤖 مدل')
+    .text('⚙️ تنظیمات')
+    .row()
     .text('🔊 متن به صدا')
+    .text('🎙️ صوت')
+    .text('🎚️ لحن')
     .row()
     .text('🧰 ابزارها')
     .text('🌐 جستجو')
+    .text('📊 آمار')
     .row()
+    .text('✍️ انسانی‌سازی')
+    .text('🌐 ترجمه')
+    .text('📝 خلاصه‌سازی')
+    .row()
+    .text('🔗 خلاصهٔ لینک')
+    .text('📄 خواندن سند')
     .text('🧠 حافظه')
+    .row()
     .text('❓ راهنما')
+    .text('👤 درباره')
 
   const url = miniAppUrl()
   if (url) kb.row().webApp('📱 مینی‌اپ', url)
 
   return kb.resized().persistent()
 }
+
 
 export function modelsKeyboard(currentModel: string): InlineKeyboard {
   const kb = new InlineKeyboard()
@@ -126,7 +170,6 @@ export function backKeyboard(target = 'nav:main'): InlineKeyboard {
   return new InlineKeyboard().text(t.menu.back, target)
 }
 
-/** کیبورد انتخاب صوت — ۲ تا در هر ردیف */
 /** مرحلهٔ اول: انتخاب جنسیت صدا */
 export function voiceGenderKeyboard(): InlineKeyboard {
   return new InlineKeyboard()
@@ -140,7 +183,6 @@ export function voiceGenderKeyboard(): InlineKeyboard {
 export function voicesKeyboard(current: string, gender?: 'f' | 'm'): InlineKeyboard {
   const kb = new InlineKeyboard()
   const list = gender ? voicesByGender(gender) : TTS_VOICES
-  const title = gender ? (gender === 'f' ? '👩 صداهای زنانه' : '👨 صداهای مردانه') : '🎙️ انتخاب صوت'
   list.forEach((v, i) => {
     const mark = v.name === current ? '✅ ' : ''
     kb.text(`${mark}${v.label}`, `ttsvoice:${v.name}`)

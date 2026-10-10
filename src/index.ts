@@ -12,6 +12,7 @@ import { registerChatHandlers } from './handlers/chat.js'
 import { registerAdminHandlers } from './handlers/admin.js'
 import { registerTtsHandlers } from './handlers/tts.js'
 import { registerToolHandlers } from './handlers/tools.js'
+import { registerQuickHandlers } from './handlers/quick.js'
 import { rateLimit } from './middleware/rateLimit.js'
 import { startServer } from './web/server.js'
 import { allModels, modelLabel, resolveDefaultModel } from './ai/index.js'
@@ -136,6 +137,7 @@ async function main(): Promise<void> {
 
   // ---------- هندلرها ----------
   registerStartHandlers(bot)
+  registerQuickHandlers(bot)
   registerChatHandlers(bot)
   registerAdminHandlers(bot)
   registerTtsHandlers(bot)
