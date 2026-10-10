@@ -67,14 +67,21 @@ export interface TtsStyle {
   prompt: string
 }
 
-/** ۶ لحن — با دستور زبان طبیعی به مدل گفته می‌شود */
+/**
+ * ۶ لحن — به شکل «Tone: ...» به مدل گفته می‌شود.
+ *
+ * ⚠️ چرا انگلیسی و این فرمت؟
+ * اگر دستور فارسی درون متن بیاید (مثل «به لحنی آرام بخوان: ...») مدل آن را
+ * هم بلند می‌خواند و صدای نهایی با یک جملهٔ اضافه شروع می‌شود.
+ * فرمت «Tone: ...» تست شده و فقط لحن را کنترل می‌کند، خوانده نمی‌شود.
+ */
 export const TTS_STYLES: TtsStyle[] = [
   { id: 'normal', label: '😐 عادی', prompt: '' },
-  { id: 'cheerful', label: '😄 شاد و پرانرژی', prompt: 'به لحنی شاد، پرانرژی و مهربان بخوان' },
-  { id: 'calm', label: '😌 آرام و آرامش‌بخش', prompt: 'به لحنی آرام، آهسته و آرامش‌بخش بخوان' },
-  { id: 'formal', label: '🎩 رسمی و جدی', prompt: 'به لحنی رسمی، جدی و رسما بخوان' },
-  { id: 'excited', label: '🤩 هیجانی', prompt: 'به لحنی هیجانی، مشتاق و با انرژی بالا بخوان' },
-  { id: 'friendly', label: '🤝 دوستانه و صمیمی', prompt: 'به لحنی دوستانه، صمیمی و گرم بخوان' },
+  { id: 'cheerful', label: '😄 شاد و پرانرژی', prompt: 'Tone: cheerful, upbeat and energetic.' },
+  { id: 'calm', label: '😌 آرام و آرامش‌بخش', prompt: 'Tone: calm, slow and soothing.' },
+  { id: 'formal', label: '🎩 رسمی و جدی', prompt: 'Tone: formal, serious and professional.' },
+  { id: 'excited', label: '🤩 هیجانی', prompt: 'Tone: excited, enthusiastic and high-energy.' },
+  { id: 'friendly', label: '🤝 دوستانه و صمیمی', prompt: 'Tone: friendly, warm and conversational.' },
 ]
 
 export const DEFAULT_STYLE = 'normal'
@@ -177,7 +184,8 @@ export async function synthesize(
   if (!clean) throw new AiError('متنی برای خواندن وجود ندارد.', 'tts')
 
   const style = styleById(styleId)
-  const prompt = style?.prompt ? `${style.prompt}: ${clean}` : clean
+  // دستور لحن پیش از متن می‌آید ولی خوانده نمی‌شود (فرمت «Tone: ...»)
+  const prompt = style?.prompt ? `${style.prompt} ${clean}` : clean
 
   let lastErr: unknown
   for (const model of TTS_FALLBACK_MODELS) {

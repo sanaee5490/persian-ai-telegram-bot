@@ -76,8 +76,8 @@ async function sendSpeech(ctx: SpeechCtx, userId: number, text: string): Promise
     stop()
     await ctx.reply('🔊 گوش کن:', { reply_markup: closeKeyboard() })
     await ctx.replyWithAudio(new InputFile(data, 'rahna.ogg'), {
-      title: 'پاسخ راهنما',
-      performer: `${voiceLabel(userVoice(userId))} · ${styleLabel(userTone(userId))}`,
+      title: 'پاسخ صوتی',
+      performer: 'راهنما',
     })
   } catch (err) {
     stop()
@@ -277,8 +277,8 @@ export async function sendVoiceReply(
     if (!clean) return
     const { data } = await synthesize(clean.slice(0, 1200), userVoice(userId), userTone(userId))
     await ctx.replyWithAudio(new InputFile(data, 'rahna.ogg'), {
-      title: 'پاسخ صوتی راهنما',
-      performer: `${voiceLabel(userVoice(userId))} · ${styleLabel(userTone(userId))}`,
+      title: 'پاسخ صوتی',
+      performer: 'راهنما',
     })
   } catch (err) {
     console.warn('پاسخ صوتی ناموفق:', err instanceof Error ? err.message.slice(0, 120) : err)

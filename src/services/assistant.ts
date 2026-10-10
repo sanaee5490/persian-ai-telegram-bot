@@ -88,7 +88,8 @@ export async function askAssistant(opts: AskOptions): Promise<AskResult> {
   let userContent = text.trim()
   if (searchBlock) userContent = `${searchBlock}\n\n---\nسوال کاربر: ${userContent || 'خلاصه‌ای از نتایج بالا بده'}`
   if (!userContent && images?.length) userContent = 'این تصویر را با جزئیات کامل توصیف و تحلیل کن. به فارسی پاسخ بده.'
-  if (!userContent && audio) userContent = 'این پیام صوتی را به متن فارسی تبدیل کن و اگر سوالی داشت پاسخ بده.'
+  // برای پیام صوتی: فقط به سوال پاسخ بده، متن را برنگردان
+  if (!userContent && audio) userContent = 'به این پیام صوتی گوش بده و مستقیم به سوال یا درخواست آن پاسخ بده. محتوای صدا را دوباره بازگو نکن، فقط پاسخ را بده.'
   if (!userContent) userContent = '...'
 
   messages.push({
