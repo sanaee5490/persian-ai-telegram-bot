@@ -11,6 +11,7 @@ import { registerStartHandlers } from './handlers/start.js'
 import { registerChatHandlers } from './handlers/chat.js'
 import { registerAdminHandlers } from './handlers/admin.js'
 import { registerTtsHandlers } from './handlers/tts.js'
+import { registerToolHandlers } from './handlers/tools.js'
 import { rateLimit } from './middleware/rateLimit.js'
 import { startServer } from './web/server.js'
 import { allModels, modelLabel, resolveDefaultModel } from './ai/index.js'
@@ -94,6 +95,12 @@ async function main(): Promise<void> {
       { command: 'tts', description: '🔊 متن به صدا' },
       { command: 'voice', description: '🎙️ انتخاب صوت' },
       { command: 'tone', description: '🎚️ انتخاب لحن' },
+      { command: 'humanize', description: '✍️ انسانی‌سازی متن' },
+      { command: 'translate', description: '🌐 ترجمهٔ حرفه‌ای' },
+      { command: 'summarize', description: '📝 خلاصه‌سازی' },
+      { command: 'link', description: '🔗 خلاصه‌سازی لینک' },
+      { command: 'ocr', description: '📄 خواندن سند' },
+      { command: 'memory', description: '🧠 حافظهٔ من' },
       { command: 'help', description: '❓ راهنما' },
     ])
     console.log('📋 منوی دستورات تلگرام ثبت شد.')
@@ -132,6 +139,7 @@ async function main(): Promise<void> {
   registerChatHandlers(bot)
   registerAdminHandlers(bot)
   registerTtsHandlers(bot)
+  registerToolHandlers(bot)
 
   // ---------- سرور وب ----------
   startServer()

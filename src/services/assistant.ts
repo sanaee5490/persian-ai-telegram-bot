@@ -4,6 +4,7 @@ import type { AiMessage } from '../ai/index.js'
 import { historyStore, userStore, getUser } from '../db/database.js'
 import { t } from '../i18n/fa.js'
 import { formatSearchContext, webSearch } from '../tools/search.js'
+import { memoryContext, extractMemories } from './memory.js'
 
 export interface AskOptions {
   userId: number
@@ -56,7 +57,15 @@ export async function askAssistant(opts: AskOptions): Promise<AskResult> {
   const remember = opts.remember !== false
 
   const model = userModelInfo(userId)
-  const system = buildSystemPrompt(userId)
+  let system = buildSystemPrompt(userId)
+
+  // حافظهٔ بلندمدت: حقایق مرتبط با این گفتگو را به system prompt اضافه کن
+  try {
+    const mem = await memoryContext(userId, text.trim())
+    if (mem) system = `${system}\n\n${mem}`
+  } catch {
+    /* حافظه اختیاری است */
+  }
 
   let usedSearch = false
   let searchBlock = ''

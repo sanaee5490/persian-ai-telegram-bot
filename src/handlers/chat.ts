@@ -5,7 +5,7 @@ import { askAssistant } from '../services/assistant.js'
 import { downloadAsBase64, startTyping } from '../utils/telegram.js'
 import { sendLong } from '../utils/text.js'
 import { closeKeyboard, speakKeyboard } from '../keyboards/menus.js'
-import { rememberReply } from './tts.js'
+import { rememberReply, sendVoiceReply } from './tts.js'
 import { AiError } from '../ai/index.js'
 import { webSearch, formatSearchForUser } from '../tools/search.js'
 import { config } from '../config.js'
@@ -121,7 +121,9 @@ export function registerChatHandlers(bot: Bot): void {
         audio: file,
       })
       stopTyping()
-      await sendLong((chunk) => ctx.reply(chunk, { reply_markup: closeKeyboard() }), result.text)
+      // پاسخ متنی + پاسخ صوتی (مکالمهٔ صوتی کامل)
+      await sendLong((chunk) => ctx.reply(chunk, { reply_markup: speakKeyboard() }), result.text)
+      await sendVoiceReply(ctx, user.telegram_id, result.text)
     } catch (err) {
       stopTyping()
       await handleAiError(ctx, err)

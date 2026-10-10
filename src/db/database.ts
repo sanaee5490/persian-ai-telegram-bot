@@ -51,6 +51,15 @@ CREATE TABLE IF NOT EXISTS broadcasts (
   failed     INTEGER NOT NULL DEFAULT 0,
   created_at TEXT    NOT NULL DEFAULT (datetime('now'))
 );
+
+CREATE TABLE IF NOT EXISTS memories (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  telegram_id INTEGER NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
+  content     TEXT    NOT NULL,
+  vector      TEXT,
+  created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_memories_user ON memories(telegram_id, id DESC);
 `)
 
 // ادمین‌های تعریف‌شده در .env همیشه ادمین هستند
@@ -67,6 +76,14 @@ if (!hasCol('voice')) {
 if (!hasCol('tone')) {
   db.exec("ALTER TABLE users ADD COLUMN tone TEXT NOT NULL DEFAULT 'normal'")
   console.log('🗄  ستون tone اضافه شد')
+}
+
+export interface MemoryRow {
+  id: number
+  telegram_id: number
+  content: string
+  vector: string | null
+  created_at: string
 }
 
 export interface UserRow {
@@ -102,6 +119,11 @@ const stmts = {
   setVoice: db.prepare('UPDATE users SET voice = ? WHERE telegram_id = ?'),
   setTone: db.prepare('UPDATE users SET tone = ? WHERE telegram_id = ?'),
   setBanned: db.prepare('UPDATE users SET is_banned = ? WHERE telegram_id = ?'),
+  addMemory: db.prepare<[number, string, string | null]>('INSERT INTO memories (telegram_id, content, vector) VALUES (?, ?, ?)'),
+  recentMemories: db.prepare<[number, number], MemoryRow>('SELECT * FROM memories WHERE telegram_id = ? ORDER BY id DESC LIMIT ?'),
+  allMemories: db.prepare<[number], MemoryRow>('SELECT * FROM memories WHERE telegram_id = ? ORDER BY id DESC'),
+  clearMemories: db.prepare('DELETE FROM memories WHERE telegram_id = ?'),
+  countMemories: db.prepare('SELECT COUNT(*) AS n FROM memories WHERE telegram_id = ?'),
   incMsg: db.prepare('UPDATE users SET msg_count = msg_count + 1 WHERE telegram_id = ?'),
   incImage: db.prepare('UPDATE users SET image_count = image_count + 1 WHERE telegram_id = ?'),
   incVoice: db.prepare('UPDATE users SET voice_count = voice_count + 1 WHERE telegram_id = ?'),
@@ -157,6 +179,19 @@ export const userStore = {
     voice: (id: number) => stmts.incVoice.run(id),
     search: (id: number) => stmts.incSearch.run(id),
   },
+}
+
+export const memoryStore = {
+  /** یک خاطره ذخیره می‌کند */
+  add: (id: number, content: string, vector?: string) => stmts.addMemory.run(id, content, vector ?? null),
+  /** آخرین خاطرات کاربر */
+  recent: (id: number, limit = 20) => stmts.recentMemories.all(id, limit),
+  /** همهٔ خاطرات یک کاربر */
+  all: (id: number) => stmts.allMemories.all(id),
+  /** پاک کردن خاطرات یک کاربر */
+  clear: (id: number) => stmts.clearMemories.run(id),
+  /** تعداد خاطرات */
+  count: (id: number) => (stmts.countMemories.get(id) as { n: number }).n,
 }
 
 export const historyStore = {

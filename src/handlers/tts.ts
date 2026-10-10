@@ -262,3 +262,25 @@ export function registerTtsHandlers(bot: Bot): void {
 }
 
 export { lastReply }
+
+/**
+ * پاسخ صوتی — متن را با صوت و لحن انتخابی کاربر می‌خواند.
+ * اگر تولید صدا ناموفق بود، quietly رد می‌شود (پاسخ متنی قبلاً ارسال شده).
+ */
+export async function sendVoiceReply(
+  ctx: { replyWithAudio: (a: InputFile, o?: object) => Promise<unknown> },
+  userId: number,
+  text: string,
+): Promise<void> {
+  try {
+    const clean = text.replace(/```[\s\S]*?```/g, ' ').replace(/[*_`#>]/g, '').trim()
+    if (!clean) return
+    const { data } = await synthesize(clean.slice(0, 1200), userVoice(userId), userTone(userId))
+    await ctx.replyWithAudio(new InputFile(data, 'rahna.ogg'), {
+      title: 'پاسخ صوتی راهنما',
+      performer: `${voiceLabel(userVoice(userId))} · ${styleLabel(userTone(userId))}`,
+    })
+  } catch (err) {
+    console.warn('پاسخ صوتی ناموفق:', err instanceof Error ? err.message.slice(0, 120) : err)
+  }
+}

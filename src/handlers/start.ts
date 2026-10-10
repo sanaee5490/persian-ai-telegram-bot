@@ -16,6 +16,8 @@ import {
 import { formatDate, toPersianDigits } from '../utils/text.js'
 import { userModelInfo } from '../services/assistant.js'
 import { styleLabel, voiceLabel } from '../ai/tts.js'
+import { toolsKeyboard, mainReplyKeyboard } from '../keyboards/menus.js'
+import { memoryStore } from '../db/database.js'
 
 /** ثبت/به‌روزرسانی کاربر و نمایش منوی اصلی */
 export async function showMainMenu(ctx: Context, edit = false): Promise<void> {
@@ -29,6 +31,8 @@ export async function showMainMenu(ctx: Context, edit = false): Promise<void> {
   } else {
     await ctx.reply(text, { reply_markup: kb })
   }
+  // کیبورد دائمی پایین صفحهٔ تایپ (شامل دکمهٔ مینی‌اپ)
+  await ctx.reply('⌨️ منوی سریع:', { reply_markup: mainReplyKeyboard() }).catch(() => {})
 }
 
 export function registerStartHandlers(bot: Bot): void {
@@ -182,6 +186,30 @@ export function registerStartHandlers(bot: Bot): void {
               'یا روی دکمهٔ 🔊 **بخوان** زیر هر پاسخم بزن.',
             ].join('\n'),
             { reply_markup: kb },
+          )
+          .catch(() => {})
+        break
+      }
+      case 'tools': {
+        await ctx
+          .editMessageText(t.tools.title, { reply_markup: toolsKeyboard() })
+          .catch(() => {})
+        break
+      }
+      case 'memory': {
+        const all = memoryStore.all(user.telegram_id)
+        await ctx
+          .editMessageText(
+            all.length === 0
+              ? t.tools.empty
+              : [
+                  `🧠 **چیزهایی که دربارهٔ تو می‌دانم** (${all.length})`,
+                  '',
+                  ...all.slice(0, 25).map((m) => `• ${m.content}`),
+                  '',
+                  '`/memory clear` — پاک کردن همه',
+                ].join('\n'),
+            { reply_markup: backKeyboard() },
           )
           .catch(() => {})
         break

@@ -1,7 +1,8 @@
-import { InlineKeyboard } from 'grammy'
+import { InlineKeyboard, Keyboard } from 'grammy'
 import { t } from '../i18n/fa.js'
 import { allModels, modelLabel } from '../ai/index.js'
 import { TTS_STYLES, TTS_VOICES, voicesByGender } from '../ai/tts.js'
+import { config } from '../config.js'
 
 export function mainMenuKeyboard(): InlineKeyboard {
   return new InlineKeyboard()
@@ -11,11 +12,57 @@ export function mainMenuKeyboard(): InlineKeyboard {
     .text(t.menu.settings, 'nav:settings')
     .text(t.menu.stats, 'nav:stats')
     .row()
-    .text(t.menu.help, 'nav:help')
-    .text(t.menu.about, 'nav:about')
-    .row()
     .text('🔊 متن به صدا', 'nav:tts')
     .text('🌐 جستجوی وب', 'nav:search')
+    .row()
+    .text('🧰 ابزارها', 'nav:tools')
+    .text('🧠 حافظه', 'nav:memory')
+    .row()
+    .text(t.menu.help, 'nav:help')
+    .text(t.menu.about, 'nav:about')
+}
+
+/** منوی ابزارها */
+export function toolsKeyboard(): InlineKeyboard {
+  return new InlineKeyboard()
+    .text('✍️ انسانی‌سازی', 'tool:humanize')
+    .text('🌐 ترجمه', 'tool:translate')
+    .row()
+    .text('📝 خلاصه‌سازی', 'tool:summarize')
+    .text('🔗 خلاصهٔ لینک', 'tool:link')
+    .row()
+    .text('📄 خواندن سند', 'tool:ocr')
+    .text('🔊 متن به صدا', 'nav:tts')
+    .row()
+    .text(t.menu.back, 'nav:main')
+}
+
+/** آدرس مینی‌اپ (فقط https کار می‌کند) */
+export function miniAppUrl(): string | undefined {
+  const u = config.publicUrl.replace(/\/$/, '')
+  if (!u.startsWith('https://')) return undefined
+  return `${u}/miniapp`
+}
+
+/**
+ * کیبورد دائمی پایین صفحهٔ تایپ
+ * شامل دکمهٔ مینی‌اپ که مستقیماً از قسمت تایپ باز می‌شود
+ */
+export function mainReplyKeyboard(): Keyboard {
+  const kb = new Keyboard()
+    .text('💬 چت جدید')
+    .text('🔊 متن به صدا')
+    .row()
+    .text('🧰 ابزارها')
+    .text('🌐 جستجو')
+    .row()
+    .text('🧠 حافظه')
+    .text('❓ راهنما')
+
+  const url = miniAppUrl()
+  if (url) kb.row().webApp('📱 مینی‌اپ', url)
+
+  return kb.resized().persistent()
 }
 
 export function modelsKeyboard(currentModel: string): InlineKeyboard {

@@ -75,7 +75,7 @@ export const config: AppConfig = {
   rateLimitPerMinute: Math.max(num('RATE_LIMIT_PER_MINUTE', 15), 1),
   enableWebSearch: bool('ENABLE_WEB_SEARCH', true),
   port: num('PORT', 3000),
-  publicUrl: str('PUBLIC_URL', 'http://localhost:3000'),
+  publicUrl: str('PUBLIC_URL') || str('RENDER_EXTERNAL_URL') || 'http://localhost:3000',
   dbPath: path.isAbsolute(str('DB_PATH', './data/bot.db'))
     ? str('DB_PATH', './data/bot.db')
     : path.resolve(ROOT_DIR, str('DB_PATH', './data/bot.db')),
