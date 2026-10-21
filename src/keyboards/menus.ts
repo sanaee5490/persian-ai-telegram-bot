@@ -52,6 +52,7 @@ export function miniAppUrl(): string | undefined {
  */
 export const QUICK_ACTIONS: Record<string, string> = {
   '📈 بازار مالی': 'market',
+  '📸 تحلیل چارت من': 'chartphoto',
   '💬 چت جدید': 'nav:new',
   '🤖 مدل': 'nav:models',
   '⚙️ تنظیمات': 'nav:settings',
@@ -102,6 +103,8 @@ export function mainReplyKeyboard(): Keyboard {
     .text('📄 خواندن سند')
     .text('🧠 حافظه')
     .text('📈 بازار مالی')
+    .row()
+    .text('📸 تحلیل چارت من')
     .row()
     .text('❓ راهنما')
     .text('👤 درباره')

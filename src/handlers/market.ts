@@ -130,6 +130,7 @@ export function marketSymbolKeyboard() {
   }))
   const grid = []
   for (let i = 0; i < rows.length; i += 2) grid.push(rows.slice(i, i + 2))
+  grid.unshift([{ text: '📸 تحلیل چارت من', callback_data: 'chartphoto:open' }])
   return { inline_keyboard: grid }
 }
 
