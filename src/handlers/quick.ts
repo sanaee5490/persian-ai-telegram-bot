@@ -29,6 +29,7 @@ import { humanize, translate, summarize, summarizeUrl, readImage } from '../ai/t
 import { synthesize, styleLabel, voiceLabel } from '../ai/tts.js'
 import { webSearch, formatSearchForUser } from '../tools/search.js'
 import { config } from '../config.js'
+import { marketSymbolKeyboard } from './market.js'
 
 /** کاری که کاربر انتخاب کرده و منتظر فرستادن متن است */
 export type PendingAction =
@@ -193,6 +194,11 @@ async function showAction(
   const user = upsertUser(ctx.from.id, ctx.from.username, ctx.from.first_name)
 
   switch (action) {
+    case 'market':
+    case 'nav:market':
+      await ctx.reply('📈 بازار مالی\n\nکدام نماد را تحلیل کنم؟', { reply_markup: marketSymbolKeyboard() })
+      break
+
     case 'nav:new':
       historyStore.clear(user.telegram_id)
       await ctx.reply('🧹 حافظهٔ گفتگو پاک شد. از صفر شروع می‌کنیم!', { reply_markup: mainReplyKeyboard() })
@@ -307,6 +313,13 @@ export function registerQuickHandlers(bot: Bot): void {
     const user = upsertUser(userId, ctx.from!.username, ctx.from!.first_name)
     if (user.is_banned) {
       await ctx.reply(t.banned)
+      return
+    }
+
+    // دکمه بازار حتی هنگام انتظار ورودی ابزار قبلی باید کار کند.
+    if (quickAction(text) === 'market') {
+      pending.delete(userId)
+      await showAction(ctx, 'market')
       return
     }
 
