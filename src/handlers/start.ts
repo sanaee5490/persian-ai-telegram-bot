@@ -190,6 +190,16 @@ export function registerStartHandlers(bot: Bot): void {
           .catch(() => {})
         break
       }
+      case 'market': {
+        const m = await import('./market.js')
+        await ctx
+          .editMessageText(
+            '📈 **بازار مالی**\n\nکدام نماد را تحلیل کنم؟\n\n_یا مستقیم بنویس:_ `/market BTC 1h`',
+            { parse_mode: 'Markdown', reply_markup: m.marketSymbolKeyboard() },
+          )
+          .catch(() => {})
+        break
+      }
       case 'tools': {
         await ctx
           .editMessageText(t.tools.title, { reply_markup: toolsKeyboard() })

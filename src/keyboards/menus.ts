@@ -32,6 +32,8 @@ export function toolsKeyboard(): InlineKeyboard {
     .text('🔗 خلاصهٔ لینک', 'tool:link')
     .row()
     .text('📄 خواندن سند', 'tool:ocr')
+    .text('📈 بازار مالی', 'nav:market')
+    .row()
     .text('🔊 متن به صدا', 'nav:tts')
     .row()
     .text(t.menu.back, 'nav:main')
@@ -49,6 +51,7 @@ export function miniAppUrl(): string | undefined {
  * وقتی کاربر یکی از این دکمه‌ها را بزند، متن همان به ربات فرستاده می‌شود
  */
 export const QUICK_ACTIONS: Record<string, string> = {
+  '📈 بازار مالی': 'market',
   '💬 چت جدید': 'nav:new',
   '🤖 مدل': 'nav:models',
   '⚙️ تنظیمات': 'nav:settings',
@@ -98,6 +101,7 @@ export function mainReplyKeyboard(): Keyboard {
     .text('🔗 خلاصهٔ لینک')
     .text('📄 خواندن سند')
     .text('🧠 حافظه')
+    .text('📈 بازار مالی')
     .row()
     .text('❓ راهنما')
     .text('👤 درباره')
